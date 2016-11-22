@@ -2,7 +2,9 @@
 #include <cstdint>
 #include <iostream>
 #include <array>
+#include <chrono>
 
+using namespace std::chrono;
 using std::cout;
 using std::endl;
 
@@ -70,14 +72,12 @@ void printMthComb(const int m, const int n, const int k) {
 
 //n-choose-k
 void generateCombos(const int n, const int k) {
-    // std::size_t n = 5;
-    // constexpr std::size_t k = 3;
     const std::size_t lastElement = k - 1;
 
     std::vector<int> currentCombination(k);
     int i;
 
-    int fuck = 0;
+    long fuck = 0;
 
     // fill initial combination is real first combination -1 for last number, 
     // as we will increase it in loop
@@ -102,25 +102,77 @@ void generateCombos(const int n, const int k) {
         else
             currentCombination[lastElement]++;
 
-        static int count = 0;
-        cout << count++ << ":";
-        for(auto i : currentCombination)
-            cout << i;
-        cout << '\n';
+        // static int count = 0;
+        // cout << count++ << ":";
+        // for(auto i : currentCombination)
+        //     cout << i;
+        // cout << '\n';
         fuck++;
 
     } while (currentCombination[0] != (n-k) || currentCombination[lastElement] != (n-1));
 
-    cout << "num combinations: " << fuck << endl;
+    cout << "legacy count: " << fuck << endl;
+}
+
+void next_combination(uint8_t* currentCombination, const int n, const int k) {
+	const int lastElement = k - 1;
+	
+	if (currentCombination[lastElement] == n-1) {
+		int i = k-2;
+		while (currentCombination[i] == (n-k+i))
+            i--;
+
+        currentCombination[i]++;
+
+        for(int j=(i+1); j<k; ++j)
+        	currentCombination[j] = currentCombination[i]+j-i;
+	}
+	else
+		currentCombination[lastElement]++;
+}
+
+void first_combination(uint8_t* currentCombination, const int n, const int k) {
+	for(int i = 0; i < k; ++i)
+		currentCombination[i] = i;
+	currentCombination[k-1] = k-2;
+}
+
+void generateCombos2(const int n, const int k) {
+	const int lastElement = k - 1;
+	auto* comb = new uint8_t[k];
+	first_combination(comb, n, k);
+
+	long count = 0;
+	while (comb[0] != (n-k) || comb[lastElement] != (n-1)) {
+		next_combination(comb, n, k);
+		++count;
+	}
+	cout << "new count: " << count << '\n';
+
+	delete[] comb;
 }
 
 int main() {
 
-	const int n = 10;
-	const int k = 3;
-	const int m = 100;
-	generateCombos(n, k);
+	const int n = 70;
+	const int k = 8;
+	// const int m = 100;
+	
 
 	cout << numCombinations(n, k) << '\n';
-	printMthComb(m, n, k);
+	//printMthComb(m, n, k);
+
+	high_resolution_clock::time_point t1 = high_resolution_clock::now();
+	generateCombos(n, k);
+	high_resolution_clock::time_point t2 = high_resolution_clock::now();
+
+	auto duration0 = duration_cast<microseconds>(t2-t1).count();
+	cout << "Legacy: " << duration0 << '\n';
+
+	t1 = high_resolution_clock::now();
+	generateCombos2(n, k);
+	t2 = high_resolution_clock::now();
+
+	auto duration1 = duration_cast<microseconds>(t2-t1).count();
+	cout << "New: " << duration1 << '\n';
 }
