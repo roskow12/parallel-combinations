@@ -2,7 +2,7 @@
 #define _PARALLEL_COMB_H_
 
 #include <cstdint>
-
+#include <vector>
 
 class Combination {
 	const uint8_t k;
@@ -10,10 +10,11 @@ class Combination {
 	const uint8_t k_minus_2;
 	const uint8_t n_minus_1;
 	const uint8_t n_minus_k;
-	const long m_combsToCompute;
-	long count;
+	const uint64_t m_combsToCompute;
+	uint64_t count;
+
 public:
-	uint8_t* currentCombination;
+	std::array<uint8_t, 8> currentCombination;
 
 	bool next(){
 		if (++count > m_combsToCompute)
@@ -32,35 +33,29 @@ public:
 		else
 			currentCombination[lastIndex]++;
 
-		// for(int i=0; i<k; ++i)
-		// 	cout << unsigned(currentCombination[i]) << ' ';
-		// cout << '\n';
-
 		return true;
 	}
 
-	long generate(){
-		while(this->next()) {}
-			
+	uint64_t generate(){
+		while(this->next()) {}		
 		return count-1;
 	}
 
-	Combination(const uint8_t n, const uint8_t k, const long combsToCompute = 0) :
+	Combination(const uint8_t n, const uint8_t k, const uint64_t combsToCompute = 0) :
 		k(k),
 		lastIndex(k-1),
 		k_minus_2(k-2),
 		n_minus_1(n-1),
 		n_minus_k(n-k),
 		m_combsToCompute( (combsToCompute == 0) ? numCombinations(n,k) : combsToCompute),
-		count(0),
-		currentCombination(new uint8_t[k])
+		count(0)
 	{
 		for(int i=0; i<k; ++i)
 			currentCombination[i] = i;
 		currentCombination[lastIndex] = k_minus_2;
 	}
 
-	Combination(const uint8_t n, const uint8_t k, const long combsToCompute, 
+	Combination(const uint8_t n, const uint8_t k, const uint64_t combsToCompute,
 		const std::vector<uint8_t> startCombination) : 
 			k(k),
 			lastIndex(k-1),
@@ -68,8 +63,7 @@ public:
 			n_minus_1(n-1),
 			n_minus_k(n-k),
 			m_combsToCompute(combsToCompute),
-			count(0),
-			currentCombination(new uint8_t[k])
+			count(0)
 	{
 		for(int i=0; i<k; ++i)
 			currentCombination[i] = startCombination[i];
@@ -79,14 +73,14 @@ public:
 		// delete[] currentCombination;
 	}
 
-	static long numCombinations(const long n, const long k) {
+	static uint64_t numCombinations(const long n, const long k) {
 		
 		if(n<k)
 			return 0;
 		else if(n == k)
 			return 1;
 
-		long delta, iMax;
+		uint64_t delta, iMax;
 
 		const int nMinusK = n-k;
 
@@ -99,9 +93,9 @@ public:
 			iMax = nMinusK;
 		}
 
-		long ans = delta + 1;
+		uint64_t ans = delta + 1;
 
-		for(long i=2; i <= iMax; ++i)
+		for(uint64_t i=2; i <= iMax; ++i)
 			ans = (ans * (delta+i)) / i;
 
 		return ans;
