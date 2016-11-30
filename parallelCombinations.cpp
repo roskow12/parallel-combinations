@@ -32,6 +32,10 @@ Combination::Combination(const uint8_t n, const uint8_t k,
 		currentCombination[i] = startCombination[i];
 }
 
+Combination::~Combination() {
+	delete[] combsToCompute;
+}
+
 bool Combination::next(){
 	if(++currentCombIndex > combsToCompute)
 		return false;
