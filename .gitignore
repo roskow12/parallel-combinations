@@ -1,0 +1,7 @@
+.vs/
+CMakeCache.txt
+CMakeFiles/
+Debug/
+Release/
+*.*db
+/x64/
