@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include <iostream>
+#include <iomanip>
 #include <array>
 #include <chrono>
 #include <limits>
@@ -198,18 +199,22 @@ int main(int argc, const char* argv[]) {
 	cout << "actual count:\t" << Combination::numCombinations(n, k) << '\n';
 
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
-	cout << "legacy count:\t" << generateCombos5(n, k) << '\n';
+	cout << "legacy count:\t" << generateCombos3(n, k) << '\n';
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
 	auto duration0 = duration_cast<microseconds>(t2-t1).count();
 	cout << "legacy time:\t" << duration0 << '\n';
 
 	t1 = high_resolution_clock::now();
-	cout << "new count:\t" << generateCombos6(n, k) << '\n';
+	cout << "new count:\t" << generateCombos4(n, k) << '\n';
 	t2 = high_resolution_clock::now();
 
 	auto duration1 = duration_cast<microseconds>(t2-t1).count();
 	cout << "new time:\t" << duration1 << '\n';
 	
+	double timeDiff = (1.0 - ((double)duration1/duration0))*100.0;
+
+	cout << "new gen was " << std::fixed << std::setprecision(4) << timeDiff << '%' << " faster\n\n";
+
 	return 0;
 }
