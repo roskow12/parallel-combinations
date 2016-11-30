@@ -212,9 +212,9 @@ int main(int argc, const char* argv[]) {
 	auto duration1 = duration_cast<microseconds>(t2-t1).count();
 	cout << "new time:\t" << duration1 << '\n';
 	
-	double timeDiff = (1.0 - ((double)duration1/duration0))*100.0;
+	double timeDiff = (((double)duration0/duration1));
 
-	cout << "new gen was " << std::fixed << std::setprecision(4) << timeDiff << '%' << " faster\n\n";
+	cout << "new gen was " << std::fixed << std::setprecision(2) << timeDiff << "x faster\n\n";
 
 	return 0;
 }
