@@ -9,6 +9,8 @@
 #include <limits>
 #include <future>
 #include <thread>
+#include <boost/thread.hpp>
+#include <boost/thread/future.hpp>
 #include "parallelCombinations.h"
 
 
@@ -46,7 +48,7 @@ std::vector<uint8_t> mthComb(const uint64_t m, const uint8_t n, const uint8_t k)
 		ans[i] = (n-1) - ans[i];
 	}
 
-	cout << m << "th combination: ";
+	std::cout<< m << "th combination: ";
 	for(auto e : ans)
 		cout << unsigned(e) << ' ';
 	cout << '\n';
@@ -165,6 +167,8 @@ uint64_t generateCombos5(const int n, const int k) {
 	return total;
 }
 
+
+
 uint64_t generateCombos6(const int n, const int k) {
 	const uint64_t numComb = Combination::numCombinations(n, k);
 
@@ -190,6 +194,44 @@ uint64_t generateCombos6(const int n, const int k) {
 	return total;
 }
 
+uint64_t generateCombos7(const int n, const int k) {
+	const uint64_t numComb = Combination::numCombinations(n, k);
+
+	const uint64_t eighth = (uint64_t)numComb / 6;
+	const uint64_t remainder = numComb % 6;
+
+	const std::unique_ptr<Combination> a = std::make_unique<Combination>(n, k, eighth + 1);
+	const std::unique_ptr<Combination> b = std::make_unique<Combination>(n, k, eighth, mthComb(eighth, n, k));
+	const std::unique_ptr<Combination> c = std::make_unique<Combination>(n, k, eighth, mthComb(eighth * 2, n, k));
+	const std::unique_ptr<Combination> d = std::make_unique<Combination>(n, k, eighth, mthComb(eighth * 3, n, k));
+	const std::unique_ptr<Combination> e = std::make_unique<Combination>(n, k, eighth, mthComb(eighth * 4, n, k));
+	const std::unique_ptr<Combination> f = std::make_unique<Combination>(n, k, eighth + remainder - 1, mthComb(eighth * 5, n, k));
+
+	auto f1 = boost::async(boost::launch::async, boost::bind(&Combination::generate, a.get()));
+	auto f2 = boost::async(boost::launch::async, boost::bind(&Combination::generate, b.get()));
+	auto f3 = boost::async(boost::launch::async, boost::bind(&Combination::generate, c.get()));
+	auto f4 = boost::async(boost::launch::async, boost::bind(&Combination::generate, f.get()));
+	auto f5 = boost::async(boost::launch::async, boost::bind(&Combination::generate, e.get()));
+	auto f6 = boost::async(boost::launch::async, boost::bind(&Combination::generate, f.get()));
+
+
+	uint64_t total = f1.get();
+	cout << "f1" << endl;
+	total += f2.get();
+	cout << "f2" << endl;
+	total += f3.get();
+	cout << "f3" << endl;
+	total += f4.get();
+	cout << "f4" << endl;
+	total += f5.get();
+	cout << "f5" << endl;
+	total += f6.get();
+	cout << "f6" << endl;
+
+
+	return total;
+}
+
 int main(int argc, const char* argv[]) {
 	cout << "# args: " << argc << '\n';
 
@@ -199,14 +241,14 @@ int main(int argc, const char* argv[]) {
 	cout << "actual count:\t" << Combination::numCombinations(n, k) << '\n';
 
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
-	cout << "legacy count:\t" << generateCombos3(n, k) << '\n';
+	cout << "legacy count:\t" << generateCombos6(n, k) << '\n';
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
 	auto duration0 = duration_cast<microseconds>(t2-t1).count();
 	cout << "legacy time:\t" << duration0 << '\n';
 
 	t1 = high_resolution_clock::now();
-	cout << "new count:\t" << generateCombos4(n, k) << '\n';
+	cout << "new count:\t" << generateCombos7(n, k) << '\n';
 	t2 = high_resolution_clock::now();
 
 	auto duration1 = duration_cast<microseconds>(t2-t1).count();
