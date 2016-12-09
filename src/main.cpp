@@ -101,7 +101,7 @@ uint64_t generateCombos6(const int n, const int k) {
 }
 
 const uint64_t ITERATIONS = 1;
-const uint32_t TEST_RUNS = 1;
+const uint32_t TEST_RUNS = 15;
 
 int main(int argc, const char* argv[]) {
 	cout << "# args: " << argc << '\n';
@@ -133,21 +133,21 @@ int main(int argc, const char* argv[]) {
 
 	moodycamel::stats_t stats = 
 		moodycamel::microbench_stats([&]() {generateCombos3(n,8);}, ITERATIONS, TEST_RUNS);
-	printf("legacy stats: avg: %.3fms, min: %.3fms, max: %.3fms, stddev: %.3fms, median: %.3fms\n",
+	printf("\tlegacy stats: avg: %.3fms, min: %.3fms, max: %.3fms, stddev: %.3fms, median: %.3fms\n",
 	    stats.avg(),
 	    stats.min(),
 	    stats.max(),
 	    stats.stddev(),
 	    stats.median());
 
-	// stats = 
-	// 	moodycamel::microbench_stats([&]() {generateCombos6(n,8);}, ITERATIONS, TEST_RUNS);
-	// printf("new stats: avg: %.3fms, min: %.3fms, max: %.3fms, stddev: %.3fms, median: %.3fms\n",
-	//     stats.avg(),
-	//     stats.min(),
-	//     stats.max(),
-	//     stats.stddev(),
-	//     stats.median());
+	 stats = 
+	 	moodycamel::microbench_stats([&]() {generateCombos6(n,8);}, ITERATIONS, TEST_RUNS);
+	 printf("\tnew stats: avg: %.3fms, min: %.3fms, max: %.3fms, stddev: %.3fms, median: %.3fms\n",
+	     stats.avg(),
+	     stats.min(),
+	     stats.max(),
+	     stats.stddev(),
+	     stats.median());
 
 	// generateCombos5(n,8);
 

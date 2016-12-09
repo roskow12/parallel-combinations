@@ -97,9 +97,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\microbench\systemtime.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\microbench\microbench.h" />
+    <ClInclude Include="..\src\microbench\systemtime.h" />
+    <ClInclude Include="..\src\parallelCombinations.h" />
     <ClInclude Include="parallelCombinations.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
