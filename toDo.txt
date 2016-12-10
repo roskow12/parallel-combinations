@@ -1,0 +1,7 @@
+- read in players as const objects (python)
+- preprocesss csv 
+  - add ppd column and remove inelligable players
+- have python change defines 
+  - change numPlayers (n)
+  - change numThreads
+- unit tests
