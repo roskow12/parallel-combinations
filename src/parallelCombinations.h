@@ -1,36 +1,32 @@
 #ifndef _PARALLEL_COMB_H_
 #define _PARALLEL_COMB_H_
 
+#include "combDefines.h"
 #include <cstdint>
 #include <vector>
 
 class Combination {
-  const uint8_t k;
-  const uint8_t lastIndex;
-  const uint8_t k_minus_2;
-  const uint8_t n_minus_1;
-  const uint8_t n_minus_k;
   const uint64_t m_combsToCompute;
   uint64_t count;
 
 public:
-  std::array<uint8_t, 8> currentCombination;
+  std::array<uint8_t, K> currentCombination;
 
   bool next() {
     if (++count > m_combsToCompute)
       return false;
 
-    if (currentCombination[lastIndex] == n_minus_1) {
-      uint8_t i = k_minus_2;
-      while (currentCombination[i] == (n_minus_k + i))
+    if (currentCombination[LAST_INDEX] == N_MINUS_1) {
+      uint8_t i = K_MINUS_2;
+      while (currentCombination[i] == (N_MINUS_K + i))
         i--;
 
       currentCombination[i]++;
 
-      for (uint8_t j = (i + 1); j < k; ++j)
+      for (uint8_t j = (i + 1); j < K; ++j)
         currentCombination[j] = currentCombination[i] + j - i;
     } else
-      currentCombination[lastIndex]++;
+      currentCombination[LAST_INDEX]++;
 
     return true;
   }
@@ -41,53 +37,41 @@ public:
     return count - 1;
   }
 
-  Combination(const uint8_t n, const uint8_t k,
-              const uint64_t combsToCompute = 0)
-      : k(k), 
-      	lastIndex(k - 1), 	
-      	k_minus_2(k - 2), 	
-      	n_minus_1(n - 1),
-        n_minus_k(n - k),
-        m_combsToCompute((combsToCompute == 0) ? numCombinations(n, k)
+  Combination(const uint64_t combsToCompute = 0)
+      : m_combsToCompute((combsToCompute == 0) ? numCombinations(N, K)
                                                : combsToCompute),
         count(0) {
-    for (int i = 0; i < k; ++i)
+    for (int i = 0; i < K; ++i)
       currentCombination[i] = i;
-    currentCombination[lastIndex] = k_minus_2;
+    currentCombination[LAST_INDEX] = K_MINUS_2;
   }
 
-  Combination(const uint8_t n, const uint8_t k, const uint64_t combsToCompute,
+  Combination(const uint64_t combsToCompute,
               const std::vector<uint8_t> startCombination)
-      : k(k), 
-      	lastIndex(k - 1), 
-  		k_minus_2(k - 2), 
-  		n_minus_1(n - 1),
-        n_minus_k(n - k), 
-        m_combsToCompute(combsToCompute), 
+      : m_combsToCompute(combsToCompute), 
         count(0) {
-    for (int i = 0; i < k; ++i)
+    for (int i = 0; i < K; ++i)
       currentCombination[i] = startCombination[i];
   }
 
   ~Combination() {}
 
-  static uint64_t numCombinations(const long n, const long k) {
+  static constexpr uint64_t numCombinations() {
 
-    if (n < k)
+    if (N < K)
       return 0;
-    else if (n == k)
+    else if (N == K)
       return 1;
 
     uint64_t delta, iMax;
 
-    const int nMinusK = n - k;
 
-    if (k < nMinusK) {
-      delta = nMinusK;
-      iMax = k;
+    if (K < N_MINUS_K) {
+      delta = N_MINUS_K;
+      iMax = K;
     } else {
-      delta = k;
-      iMax = nMinusK;
+      delta = K;
+      iMax = N_MINUS_K;
     }
 
     uint64_t ans = delta + 1;

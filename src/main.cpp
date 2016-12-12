@@ -106,51 +106,15 @@ uint64_t generateCombos6(const int n, const int k) {
   return total;
 }
 
-const uint64_t ITERATIONS = 1;
-const uint32_t TEST_RUNS = 15;
+constexpr std::array<std::unique_ptr<Combination>, NUM_THREADS> initCombs() {
+
+}
 
 int main(int argc, const char *argv[]) {
-  cout << "# args: " << argc << '\n';
-
-  const int n = atoi(argv[1]);
-  // const int k = atoi(argv[2]);
-
-  acutalNum = Combination::numCombinations(n, 8);
-
-  cout << "actual count:\t" << acutalNum << '\n';
-
-  // high_resolution_clock::time_point t1 = high_resolution_clock::now();
-  // cout << "legacy count:\t" << generateCombos5(n, k) << '\n';
-  // high_resolution_clock::time_point t2 = high_resolution_clock::now();
-
-  // auto duration0 = duration_cast<microseconds>(t2-t1).count();
-  // cout << "legacy time:\t" << duration0 << '\n';
-
-  // t1 = high_resolution_clock::now();
-  // cout << "new count:\t" << generateCombos7(n, k) << '\n';
-  // t2 = high_resolution_clock::now();
-
-  // auto duration1 = duration_cast<microseconds>(t2-t1).count();
-  // cout << "new time:\t" << duration1 << '\n';
-
-  // double timeDiff = (((double)duration0/duration1));
-
-  // cout << "new gen was " << std::fixed << std::setprecision(2) << timeDiff <<
-  // "x faster\n\n";
-
-  moodycamel::stats_t stats = moodycamel::microbench_stats(
-      [&]() { generateCombos3(n, 8); }, ITERATIONS, TEST_RUNS);
-  printf("legacy stats:\tavg: %.3fms, min: %.3fms, max: %.3fms, stddev: "
-         "%.3fms, median: %.3fms\n",
-         stats.avg(), stats.min(), stats.max(), stats.stddev(), stats.median());
-
-  stats = moodycamel::microbench_stats([&]() { generateCombos6(n, 8); },
-                                       ITERATIONS, TEST_RUNS);
-  printf("new stats:\tavg: %.3fms, min: %.3fms, max: %.3fms, stddev: %.3fms, "
-         "median: %.3fms\n",
-         stats.avg(), stats.min(), stats.max(), stats.stddev(), stats.median());
-
-  // generateCombos5(n,8);
+  
+  constexpr std::array<std::unique_ptr<Combination>, NUM_THREADS> combs = {
+    std::make_unique<Combination>()
+  }
 
   return 0;
 }
